@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'futsal_app',
-    'rest_framework',
+    'core',
 ]
 
 MIDDLEWARE = [
