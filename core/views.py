@@ -30,3 +30,8 @@ def book_field(request, field_id):
         return redirect('my_bookings')
     
     return render(request, 'book_field.html', {'field': field})
+
+@login_required
+def my_bookings(request):
+    bookings = Booking.objects.filter(user=request.user).order_by('-date')
+    return render(request, 'my_bookings.html', {'bookings': bookings})
