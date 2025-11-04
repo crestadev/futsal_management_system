@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Available Fields{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Available Futsal Fields</h2>
+    <div class="row">
+        {% for field in fields %}
+        <div class="col-md-4 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5>{{ field.name }}</h5>
+                    <p>📍 {{ field.location }}</p>
+                    <p>💰 Rs. {{ field.price_per_hour }} per hour</p>
+                    <a href="{% url 'book_field' field.id %}" class="btn btn-primary">Book Now</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No futsal fields available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
