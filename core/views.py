@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Field, Booking
 from datetime import datetime
+from django.contrib import messages
+
 
 def home(request):
     return render(request, 'home.html')
@@ -27,6 +29,7 @@ def book_field(request, field_id):
             end_time=end_time,
             is_confirmed=True
         )
+        messages.success(request, f'Your booking for {field.name} on {date} was successful!')
         return redirect('my_bookings')
     
     return render(request, 'book_field.html', {'field': field})
