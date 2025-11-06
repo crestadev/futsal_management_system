@@ -3,22 +3,36 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Book {{ field.name }}</h2>
-    <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label>Date:</label>
-            <input type="date" name="date" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Start Time:</label>
-            <input type="time" name="start_time" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>End Time:</label>
-            <input type="time" name="end_time" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-success">Confirm Booking</button>
-    </form>
+  <h2>Book {{ field.name }}</h2>
+
+  <form method="POST" class="mb-4">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="date" class="form-label">Date:</label>
+      <input type="date" id="date" name="date" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="start_time" class="form-label">Start Time:</label>
+      <input type="time" id="start_time" name="start_time" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="end_time" class="form-label">End Time:</label>
+      <input type="time" id="end_time" name="end_time" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-success">Confirm Booking</button>
+  </form>
+
+  {% if field.booking_set.all %}
+  <h5>Existing Bookings</h5>
+  <ul class="list-group">
+    {% for b in field.booking_set.all %}
+      <li class="list-group-item">
+        {{ b.date }} — {{ b.start_time|time:"H:i" }} to {{ b.end_time|time:"H:i" }}
+      </li>
+    {% empty %}
+      <li class="list-group-item">No current bookings.</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
 </div>
 {% endblock %}
