@@ -3,6 +3,23 @@ from django.contrib.auth.decorators import login_required
 from .models import Field, Booking
 from datetime import datetime
 from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # log them in automatically
+            messages.success(request, ' Account created successfully!')
+            return redirect('home')
+        else:
+            messages.error(request, ' Please correct the errors below.')
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'register.html', {'form': form})
 
 
 def home(request):
