@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 
 class Field(models.Model):
     name = models.CharField(max_length=100)
@@ -21,3 +23,13 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.field.name} ({self.date})"
+    
+    def clean(self):
+        overlap = Booking.objects.filter(
+            field=self.field,
+            date=self.date,
+            start_time__lt=self.end_time,
+            end_time__gt=self.start_time
+        ).exclude(pk=self.pk)
+        if overlap.exists():
+            raise ValidationError("This field is already booked for that time slot.")

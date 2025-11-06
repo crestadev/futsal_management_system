@@ -29,7 +29,7 @@ def book_field(request, field_id):
         ).exists()
 
         if conflict:
-            messages.error(request, "⚠️ This field is already booked for that time slot. Please choose another.")
+            messages.error(request, " This field is already booked for that time slot. Please choose another.")
             return redirect('book_field', field_id=field.id)
 
         Booking.objects.create(
@@ -41,7 +41,7 @@ def book_field(request, field_id):
             is_confirmed=True
         )
 
-        messages.success(request, f"✅ Booking for {field.name} on {date} confirmed!")
+        messages.success(request, f" Booking for {field.name} on {date} confirmed!")
         return redirect('my_bookings')
 
     return render(request, 'book_field.html', {'field': field})
