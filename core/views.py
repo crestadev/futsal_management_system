@@ -15,11 +15,22 @@ def field_list(request):
 @login_required
 def book_field(request, field_id):
     field = get_object_or_404(Field, id=field_id)
-    
+
     if request.method == 'POST':
         date = request.POST.get('date')
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
+
+        conflict = Booking.objects.filter(
+            field=field,
+            date=date,
+            start_time__lt=end_time,
+            end_time__gt=start_time
+        ).exists()
+
+        if conflict:
+            messages.error(request, "⚠️ This field is already booked for that time slot. Please choose another.")
+            return redirect('book_field', field_id=field.id)
 
         Booking.objects.create(
             user=request.user,
@@ -29,9 +40,10 @@ def book_field(request, field_id):
             end_time=end_time,
             is_confirmed=True
         )
-        messages.success(request, f'Your booking for {field.name} on {date} was successful!')
+
+        messages.success(request, f"✅ Booking for {field.name} on {date} confirmed!")
         return redirect('my_bookings')
-    
+
     return render(request, 'book_field.html', {'field': field})
 
 @login_required
