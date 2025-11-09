@@ -42,11 +42,12 @@ def book_field(request, field_id):
             field=field,
             date=date,
             start_time__lt=end_time,
-            end_time__gt=start_time
+            end_time__gt=start_time,
+            status='approved'  # only block approved ones
         ).exists()
 
         if conflict:
-            messages.error(request, " This field is already booked for that time slot. Please choose another.")
+            messages.error(request, "⚠️ This field is already booked for that time slot.")
             return redirect('book_field', field_id=field.id)
 
         Booking.objects.create(
@@ -55,10 +56,10 @@ def book_field(request, field_id):
             date=date,
             start_time=start_time,
             end_time=end_time,
-            is_confirmed=True
+            status='pending'
         )
 
-        messages.success(request, f" Booking for {field.name} on {date} confirmed!")
+        messages.success(request, " Booking request submitted! Awaiting admin approval.")
         return redirect('my_bookings')
 
     return render(request, 'book_field.html', {'field': field})
