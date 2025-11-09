@@ -5,6 +5,8 @@ from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib.admin.views.decorators import staff_member_required
+
 
 def register(request):
     if request.method == 'POST':
@@ -68,3 +70,8 @@ def book_field(request, field_id):
 def my_bookings(request):
     bookings = Booking.objects.filter(user=request.user).order_by('-date')
     return render(request, 'my_bookings.html', {'bookings': bookings})
+
+@staff_member_required
+def admin_dashboard(request):
+    bookings = Booking.objects.all().order_by('-date', '-start_time')
+    return render(request, 'admin_dashboard.html', {'bookings': bookings})
