@@ -21,11 +21,19 @@
                 <td>{{ booking.date }}</td>
                 <td>{{ booking.start_time }}</td>
                 <td>{{ booking.end_time }}</td>
-                <td>{% if booking.is_confirmed %}<span class="text-success">Confirmed</span>{% else %}<span class="text-danger">Pending</span>{% endif %}</td>
+                <td>
+                    {% if booking.status == 'approved' %}
+                        <span class="badge bg-success">Approved</span>
+                    {% elif booking.status == 'pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif booking.status == 'rejected' %}
+                        <span class="badge bg-danger">Rejected</span>
+                    {% endif %}
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5">You have no bookings yet.</td>
+                <td colspan="5" class="text-center">You have no bookings yet.</td>
             </tr>
             {% endfor %}
         </tbody>
