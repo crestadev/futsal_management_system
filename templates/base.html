@@ -43,6 +43,12 @@
             <a class="nav-link {% if url_name == 'register' %}active{% endif %}" href="{% url 'register' %}">Register</a>
           </li>
           {% endif %}
+          {% if user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link {% if url_name == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+          </li>
+          {% endif %}
+
           
         </ul>
       </div>
