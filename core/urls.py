@@ -7,4 +7,6 @@ urlpatterns = [
     path('fields/', views.field_list, name='field_list'),
     path('book/<int:field_id>/', views.book_field, name='book_field'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+
 ]
