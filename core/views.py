@@ -75,3 +75,12 @@ def my_bookings(request):
 def admin_dashboard(request):
     bookings = Booking.objects.all().order_by('-date', '-start_time')
     return render(request, 'admin_dashboard.html', {'bookings': bookings})
+
+@staff_member_required
+def update_booking_status(request, booking_id, status):
+    booking = get_object_or_404(Booking, id=booking_id)
+    if request.method == 'POST':
+        booking.status = status
+        booking.save()
+        messages.success(request, f"Booking for {booking.field.name} marked as {status.title()}.")
+    return redirect('admin_dashboard')
