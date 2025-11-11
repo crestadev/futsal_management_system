@@ -99,3 +99,24 @@ def update_booking_status(request, booking_id, status):
         booking.save()
         messages.success(request, f"Booking for {booking.field.name} marked as {status.title()}.")
     return redirect('admin_dashboard')
+
+
+
+@staff_member_required
+def update_payment_status(request, booking_id, action):
+    booking = get_object_or_404(Booking, id=booking_id)
+    if request.method == 'POST':
+        if action == 'paid':
+            booking.payment_status = 'paid'
+            booking.payment_date = timezone.now()
+            messages.success(request, f"Marked as PAID (Rs. {booking.amount}).")
+        elif action == 'unpaid':
+            booking.payment_status = 'unpaid'
+            booking.payment_date = None
+            messages.success(request, "Marked as UNPAID.")
+        elif action == 'refunded':
+            booking.payment_status = 'refunded'
+            messages.success(request, "Marked as REFUNDED.")
+        booking.save()
+    return redirect('admin_dashboard')
+

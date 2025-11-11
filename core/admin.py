@@ -17,3 +17,5 @@ class BookingAdmin(admin.ModelAdmin):
     reject_bookings.short_description = "Reject selected bookings"
 
 admin.site.register(Field)
+
+
