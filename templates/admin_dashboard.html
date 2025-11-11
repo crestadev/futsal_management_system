@@ -12,7 +12,9 @@
         <th>Date</th>
         <th>Start</th>
         <th>End</th>
+        <th>Amount (Rs)</th>
         <th>Status</th>
+        <th>Payment</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -24,6 +26,7 @@
         <td>{{ booking.date }}</td>
         <td>{{ booking.start_time }}</td>
         <td>{{ booking.end_time }}</td>
+        <td>{{ booking.amount }}</td>
         <td>
           {% if booking.status == 'approved' %}
             <span class="badge bg-success">Approved</span>
@@ -34,7 +37,17 @@
           {% endif %}
         </td>
         <td>
+          {% if booking.payment_status == 'paid' %}
+            <span class="badge bg-success">Paid</span>
+          {% elif booking.payment_status == 'refunded' %}
+            <span class="badge bg-secondary">Refunded</span>
+          {% else %}
+            <span class="badge bg-danger">Unpaid</span>
+          {% endif %}
+        </td>
+        <td>
           {% if booking.status == 'pending' %}
+            <!-- Approve / Reject -->
             <form method="POST" action="{% url 'update_booking_status' booking.id 'approved' %}" style="display:inline;">
               {% csrf_token %}
               <button class="btn btn-success btn-sm">Approve</button>
@@ -44,12 +57,24 @@
               <button class="btn btn-danger btn-sm">Reject</button>
             </form>
           {% else %}
-            <em>No actions</em>
+            <!-- Payment controls -->
+            <form method="POST" action="{% url 'update_payment_status' booking.id 'paid' %}" style="display:inline;">
+              {% csrf_token %}
+              <button class="btn btn-outline-success btn-sm">Mark Paid</button>
+            </form>
+            <form method="POST" action="{% url 'update_payment_status' booking.id 'unpaid' %}" style="display:inline;">
+              {% csrf_token %}
+              <button class="btn btn-outline-danger btn-sm">Mark Unpaid</button>
+            </form>
+            <form method="POST" action="{% url 'update_payment_status' booking.id 'refunded' %}" style="display:inline;">
+              {% csrf_token %}
+              <button class="btn btn-outline-secondary btn-sm">Refund</button>
+            </form>
           {% endif %}
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="7">No bookings available.</td></tr>
+      <tr><td colspan="9" class="text-center">No bookings available.</td></tr>
       {% endfor %}
     </tbody>
   </table>
