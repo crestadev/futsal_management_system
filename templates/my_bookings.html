@@ -11,7 +11,9 @@
                 <th>Date</th>
                 <th>Start</th>
                 <th>End</th>
+                <th>Amount (Rs)</th>
                 <th>Status</th>
+                <th>Payment</th>
             </tr>
         </thead>
         <tbody>
@@ -21,19 +23,29 @@
                 <td>{{ booking.date }}</td>
                 <td>{{ booking.start_time }}</td>
                 <td>{{ booking.end_time }}</td>
+                <td>{{ booking.amount }}</td>
                 <td>
                     {% if booking.status == 'approved' %}
                         <span class="badge bg-success">Approved</span>
                     {% elif booking.status == 'pending' %}
                         <span class="badge bg-warning text-dark">Pending</span>
-                    {% elif booking.status == 'rejected' %}
+                    {% else %}
                         <span class="badge bg-danger">Rejected</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if booking.payment_status == 'paid' %}
+                        <span class="badge bg-success">Paid</span>
+                    {% elif booking.payment_status == 'refunded' %}
+                        <span class="badge bg-secondary">Refunded</span>
+                    {% else %}
+                        <span class="badge bg-danger">Unpaid</span>
                     {% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" class="text-center">You have no bookings yet.</td>
+                <td colspan="7" class="text-center">You have no bookings yet.</td>
             </tr>
             {% endfor %}
         </tbody>
