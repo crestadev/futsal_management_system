@@ -2,6 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Field, Booking
 from datetime import datetime
+from decimal import Decimal
+from django.utils import timezone
+
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
@@ -40,17 +43,26 @@ def book_field(request, field_id):
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
 
+        # conflict only against approved
         conflict = Booking.objects.filter(
-            field=field,
-            date=date,
-            start_time__lt=end_time,
-            end_time__gt=start_time,
-            status='approved'  # only block approved ones
+            field=field, date=date,
+            start_time__lt=end_time, end_time__gt=start_time,
+            status='approved'
         ).exists()
-
         if conflict:
             messages.error(request, "⚠️ This field is already booked for that time slot.")
             return redirect('book_field', field_id=field.id)
+
+        # compute hours * price_per_hour
+        # combine to datetimes for duration
+        start_dt = datetime.fromisoformat(f"{date} {start_time}")
+        end_dt   = datetime.fromisoformat(f"{date} {end_time}")
+        if end_dt <= start_dt:
+            messages.error(request, "⚠️ End time must be after start time.")
+            return redirect('book_field', field_id=field.id)
+
+        duration_hours = Decimal((end_dt - start_dt).seconds) / Decimal(3600)
+        amount = (duration_hours * Decimal(field.price_per_hour)).quantize(Decimal("0.01"))
 
         Booking.objects.create(
             user=request.user,
@@ -58,13 +70,16 @@ def book_field(request, field_id):
             date=date,
             start_time=start_time,
             end_time=end_time,
-            status='pending'
+            status='pending',
+            amount=amount,            # 💰 save computed amount
+            payment_status='unpaid'
         )
 
-        messages.success(request, " Booking request submitted! Awaiting admin approval.")
+        messages.success(request, f"✅ Booking request submitted! Amount: Rs. {amount}. Awaiting admin approval.")
         return redirect('my_bookings')
 
     return render(request, 'book_field.html', {'field': field})
+
 
 @login_required
 def my_bookings(request):
