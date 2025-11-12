@@ -121,9 +121,13 @@ def update_payment_status(request, booking_id, action):
     return redirect('admin_dashboard')
 
 @login_required
-def booking_receipt(request, booking_id):
+def booking_receipt_pdf(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    return render(request, 'booking_receipt.html', {'booking': booking})
+    html = render_to_string('booking_receipt.html', {'booking': booking})
+    pdf = pdfkit.from_string(html, False)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="receipt_{booking.id}.pdf"'
+    return response
 
 @staff_member_required
 def admin_receipt(request, booking_id):
