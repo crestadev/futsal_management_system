@@ -125,3 +125,7 @@ def booking_receipt(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
     return render(request, 'booking_receipt.html', {'booking': booking})
 
+@staff_member_required
+def admin_receipt(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+    return render(request, 'booking_receipt.html', {'booking': booking, 'admin_view': True})
