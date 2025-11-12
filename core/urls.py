@@ -9,5 +9,7 @@ urlpatterns = [
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('update-booking/<int:booking_id>/<str:status>/', views.update_booking_status, name='update_booking_status'),
+    path('receipt/<int:booking_id>/', views.booking_receipt, name='booking_receipt'),
+    path('admin-receipt/<int:booking_id>/', views.admin_receipt, name='admin_receipt'),
 
 ]
