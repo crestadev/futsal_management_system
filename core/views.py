@@ -120,3 +120,8 @@ def update_payment_status(request, booking_id, action):
         booking.save()
     return redirect('admin_dashboard')
 
+@login_required
+def booking_receipt(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return render(request, 'booking_receipt.html', {'booking': booking})
+
