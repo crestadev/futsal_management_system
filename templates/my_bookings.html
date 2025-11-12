@@ -14,6 +14,8 @@
                 <th>Amount (Rs)</th>
                 <th>Status</th>
                 <th>Payment</th>
+                <th>Receipt</th>
+
             </tr>
         </thead>
         <tbody>
@@ -42,6 +44,15 @@
                         <span class="badge bg-danger">Unpaid</span>
                     {% endif %}
                 </td>
+                <td>
+                    {% if booking.status == 'approved' %}
+                      <a href="{% url 'booking_receipt' booking.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                    {% else %}
+                      <em>-</em>
+                    {% endif %}
+                  </td>
+                  
+                
             </tr>
             {% empty %}
             <tr>
