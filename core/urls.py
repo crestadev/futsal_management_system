@@ -11,5 +11,6 @@ urlpatterns = [
     path('update-booking/<int:booking_id>/<str:status>/', views.update_booking_status, name='update_booking_status'),
     path('receipt/<int:booking_id>/', views.booking_receipt, name='booking_receipt'),
     path('admin-receipt/<int:booking_id>/', views.admin_receipt, name='admin_receipt'),
+    path('analytics-dashboard/', views.analytics_dashboard, name='analytics_dashboard'),
 
 ]
