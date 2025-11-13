@@ -4,7 +4,9 @@ from .models import Field, Booking
 from datetime import datetime
 from decimal import Decimal
 from django.utils import timezone
-
+from django.db.models import Sum, Count
+from datetime import date
+from django.db.models.functions import TruncMonth
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
@@ -133,3 +135,23 @@ def booking_receipt_pdf(request, booking_id):
 def admin_receipt(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     return render(request, 'booking_receipt.html', {'booking': booking, 'admin_view': True})
+
+@staff_member_required
+def analytics_dashboard(request):
+    # Total revenue (paid bookings)
+    total_revenue = Booking.objects.filter(payment_status='paid').aggregate(Sum('amount'))['amount__sum'] or 0
+
+    # Total bookings
+    total_bookings = Booking.objects.count()
+
+    # Approved bookings count
+    approved_bookings = Booking.objects.filter(status='approved').count()
+
+    # Monthly revenue summary
+    monthly = (
+        Booking.objects.filter(payment_status='paid')
+        .annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(total=Sum('amount'))
+        .order_by('month')
+    )
