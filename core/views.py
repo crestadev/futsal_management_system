@@ -155,3 +155,15 @@ def analytics_dashboard(request):
         .annotate(total=Sum('amount'))
         .order_by('month')
     )
+    # Convert to chart-friendly lists
+    labels = [m['month'].strftime("%b %Y") for m in monthly]
+    data = [float(m['total']) for m in monthly]
+
+    context = {
+        'total_revenue': total_revenue,
+        'total_bookings': total_bookings,
+        'approved_bookings': approved_bookings,
+        'labels': labels,
+        'data': data,
+    }
+    return render(request, 'analytics_dashboard.html', context)
