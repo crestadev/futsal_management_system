@@ -6,6 +6,9 @@ from decimal import Decimal
 from django.utils import timezone
 from django.db.models import Sum, Count
 from datetime import date
+from django.views.decorators.http import require_GET
+from django.http import JsonResponse
+
 from django.db.models.functions import TruncMonth
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
@@ -173,3 +176,38 @@ def analytics_dashboard(request):
 def availability_calendar(request, field_id):
     field = get_object_or_404(Field, id=field_id)
     return render(request, 'availability_calendar.html', {'field': field})
+
+
+@require_GET
+def availability_api(request, field_id):
+    field = get_object_or_404(Field, id=field_id)
+    start = request.GET.get('start')  # FullCalendar passes ISO strings
+    end = request.GET.get('end')
+
+    # Parse to datetimes (YYYY-MM-DD or ISO)
+    start_dt = datetime.fromisoformat(start[:19]) if start else None
+    end_dt   = datetime.fromisoformat(end[:19]) if end else None
+
+    # show approved bookings (users), staff can also see pending
+    qs = Booking.objects.filter(field=field)
+    if start_dt and end_dt:
+        qs = qs.filter(date__range=[start_dt.date(), end_dt.date()])
+
+    if request.user.is_staff:
+        qs = qs.filter(status__in=['approved', 'pending'])
+    else:
+        qs = qs.filter(status='approved')
+
+    events = []
+    for b in qs:
+        start_iso = f"{b.date}T{b.start_time}"
+        end_iso   = f"{b.date}T{b.end_time}"
+        color = '#198754' if b.status == 'approved' else '#ffc107'  # green / amber
+        events.append({
+            "id": b.id,
+            "title": f"{b.field.name} - {b.user.username}",
+            "start": start_iso,
+            "end": end_iso,
+            "color": color,
+        })
+    return JsonResponse(events, safe=False)
