@@ -12,5 +12,7 @@ urlpatterns = [
     path('receipt/<int:booking_id>/', views.booking_receipt, name='booking_receipt'),
     path('admin-receipt/<int:booking_id>/', views.admin_receipt, name='admin_receipt'),
     path('analytics-dashboard/', views.analytics_dashboard, name='analytics_dashboard'),
+    path('calendar/<int:field_id>/', views.availability_calendar, name='availability_calendar'),
+    path('api/availability/<int:field_id>/', views.availability_api, name='availability_api'),
 
 ]
