@@ -43,6 +43,12 @@ def field_list(request):
 def book_field(request, field_id):
     field = get_object_or_404(Field, id=field_id)
 
+    initial = {
+        'date': request.GET.get('date', ''),
+        'start': request.GET.get('start', ''),
+        'end': request.GET.get('end', ''),
+    }
+    
     if request.method == 'POST':
         date = request.POST.get('date')
         start_time = request.POST.get('start_time')
