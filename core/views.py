@@ -167,3 +167,9 @@ def analytics_dashboard(request):
         'data': data,
     }
     return render(request, 'analytics_dashboard.html', context)
+
+
+@login_required
+def availability_calendar(request, field_id):
+    field = get_object_or_404(Field, id=field_id)
+    return render(request, 'availability_calendar.html', {'field': field})
