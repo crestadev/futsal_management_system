@@ -8,7 +8,7 @@ from django.db.models import Sum, Count
 from datetime import date
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
-
+from .forms import ProfileForm
 from django.db.models.functions import TruncMonth
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
@@ -217,3 +217,19 @@ def availability_api(request, field_id):
             "color": color,
         })
     return JsonResponse(events, safe=False)
+
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully ✅")
+            return redirect('profile')
+        else:
+            messages.error(request, "Please fix the errors below.")
+    else:
+        form = ProfileForm(instance=request.user)
+
+    return render(request, 'profile.html', {'form': form})
