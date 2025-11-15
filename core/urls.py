@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -14,5 +16,18 @@ urlpatterns = [
     path('analytics-dashboard/', views.analytics_dashboard, name='analytics_dashboard'),
     path('calendar/<int:field_id>/', views.availability_calendar, name='availability_calendar'),
     path('api/availability/<int:field_id>/', views.availability_api, name='availability_api'),
+
+    urlpatterns = [
+        # ... existing urls ...
+        path('profile/', views.profile_view, name='profile'),
+        path(
+            'change-password/',
+            auth_views.PasswordChangeView.as_view(
+                template_name='change_password.html',
+                success_url='/profile/'
+            ),
+            name='change_password'
+        ),
+]
 
 ]
