@@ -19,6 +19,8 @@
         {% empty %}
         <p>No futsal fields available.</p>
         {% endfor %}
+        <a href="{% url 'availability_calendar' field.id %}" class="btn btn-outline-secondary ms-2">View Calendar</a>
+
     </div>
 </div>
 {% endblock %}
