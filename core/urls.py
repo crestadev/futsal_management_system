@@ -16,6 +16,8 @@ urlpatterns = [
     path('analytics-dashboard/', views.analytics_dashboard, name='analytics_dashboard'),
     path('calendar/<int:field_id>/', views.availability_calendar, name='availability_calendar'),
     path('api/availability/<int:field_id>/', views.availability_api, name='availability_api'),
+    path('calendar-all/', views.all_fields_calendar, name='all_fields_calendar'),
+    path('api/calendar-all/', views.all_fields_api, name='all_fields_api'),
 
     urlpatterns = [
         # ... existing urls ...
