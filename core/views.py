@@ -15,6 +15,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.admin.views.decorators import staff_member_required
 
+@login_required
+def all_fields_calendar(request):
+    fields = Field.objects.all()
+    return render(request, 'all_fields_calendar.html', {'fields': fields})
 
 def register(request):
     if request.method == 'POST':
