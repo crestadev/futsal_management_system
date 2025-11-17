@@ -8,6 +8,11 @@ class Field(models.Model):
     location = models.CharField(max_length=150)
     price_per_hour = models.DecimalField(max_digits=7, decimal_places=2)
     is_available = models.BooleanField(default=True)
+    photo = models.ImageField(
+        upload_to='field_photos/',
+        blank=True,
+        null=True
+    ) 
 
     def __str__(self):
         return self.name
