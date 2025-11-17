@@ -64,6 +64,13 @@
                 <a class="nav-link {% if url_name == 'analytics_dashboard' %}active{% endif %}" href="{% url 'analytics_dashboard' %}">Analytics</a>
               </li>
           {% endif %}
+          {% if user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link {% if url_name == 'all_fields_calendar' %}active{% endif %}"
+              href="{% url 'all_fields_calendar' %}">All Fields Calendar</a>
+          </li>
+          {% endif %}
+
 
         </ul>
       </div>
