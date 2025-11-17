@@ -18,4 +18,9 @@ class BookingAdmin(admin.ModelAdmin):
 
 admin.site.register(Field)
 
+@admin.register(Field)
+class FieldAdmin(admin.ModelAdmin):
+    list_display = ('name', 'location', 'price_per_hour', 'is_available')
+
+
 
