@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}All Fields Calendar{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center">
+    <h3>📅 All Fields – Combined Availability</h3>
+    <a href="{% url 'field_list' %}" class="btn btn-outline-primary">← Back to Fields</a>
+  </div>
+
+  <hr>
+
+  <div class="alert alert-info">
+    This calendar shows ALL futsal fields with different colors.
+    <br>
+    <strong>Legend:</strong>
+    <ul class="mt-2">
+      {% for field in fields %}
+      <li><strong>{{ field.name }}</strong></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div id="calendar"></div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const calendarEl = document.getElementById('calendar');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'timeGridWeek',
+    height: "auto",
+    nowIndicator: true,
+    allDaySlot: false,
+    slotMinTime: "06:00:00",
+    slotMaxTime: "24:00:00",
+    headerToolbar: {
+      left: "prev,next today",
+      center: "title",
+      right: "dayGridMonth,timeGridWeek,timeGridDay"
+    },
+    eventTimeFormat: { hour: "2-digit", minute: "2-digit", hour12: false },
+
+    events: {
+      url: "{% url 'all_fields_api' %}",
+      failure: () => alert("Failed to load events")
+    },
+
+    dateClick: function(info) {
+      // user clicks empty spot → show field list
+      window.location.href = "{% url 'field_list' %}";
+    }
+  });
+
+  calendar.render();
+});
+</script>
+
+{% endblock %}
