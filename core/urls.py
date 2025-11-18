@@ -40,4 +40,6 @@ urlpatterns = [
         ),
         name='change_password'
     ),
+    path('field/<int:field_id>/', views.field_detail, name='field_detail'),
+
 ]
