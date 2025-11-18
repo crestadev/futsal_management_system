@@ -16,8 +16,12 @@
         {% endif %}
 
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ field.name }}</h5>
-          <p class="card-text">
+            <h5 class="card-title">
+                <a href="{% url 'field_detail' field.id %}" class="text-decoration-none text-dark">
+                  {{ field.name }}
+                </a>
+              </h5>
+                        <p class="card-text">
             📍 {{ field.location }}<br>
             💰 Rs. {{ field.price_per_hour }} / hour
           </p>
