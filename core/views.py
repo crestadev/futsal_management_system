@@ -303,3 +303,9 @@ def profile_view(request):
         form = ProfileForm(instance=request.user)
 
     return render(request, 'profile.html', {'form': form})
+
+
+def field_detail(request, field_id):
+    field = get_object_or_404(Field, id=field_id)
+    return render(request, 'field_detail.html', {'field': field})
+
