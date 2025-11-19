@@ -16,7 +16,6 @@ class BookingAdmin(admin.ModelAdmin):
         queryset.update(status='rejected')
     reject_bookings.short_description = "Reject selected bookings"
 
-admin.site.register(Field)
 
 @admin.register(Field)
 class FieldAdmin(admin.ModelAdmin):
@@ -27,5 +26,3 @@ class FieldAdmin(admin.ModelAdmin):
 class TimeSlotAdmin(admin.ModelAdmin):
     list_display = ('field', 'start_time', 'end_time')
     list_filter = ('field',)
-
-
