@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Field, Booking
+from .models import Field, Booking, TimeSlot
 
 
 @admin.register(Booking)
@@ -22,5 +22,10 @@ admin.site.register(Field)
 class FieldAdmin(admin.ModelAdmin):
     list_display = ('name', 'location', 'price_per_hour', 'is_available')
 
+
+@admin.register(TimeSlot)
+class TimeSlotAdmin(admin.ModelAdmin):
+    list_display = ('field', 'start_time', 'end_time')
+    list_filter = ('field',)
 
 
