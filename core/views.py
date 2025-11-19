@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET
 from django.utils import timezone
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
+from .models import TimeSlot
 
 from .models import Field, Booking
 from .forms import ProfileForm
@@ -55,65 +56,52 @@ def field_list(request):
 # BOOKING SYSTEM
 # ============================================================
 
+
 @login_required
 def book_field(request, field_id):
     field = get_object_or_404(Field, id=field_id)
-
-    initial = {
-        'date': request.GET.get('date', ''),
-        'start': request.GET.get('start', ''),
-        'end': request.GET.get('end', ''),
-    }
+    slots = TimeSlot.objects.filter(field=field).order_by('start_time')
 
     if request.method == 'POST':
-        date = request.POST.get('date')
-        start_time = request.POST.get('start_time')
-        end_time = request.POST.get('end_time')
+        slot_id = request.POST.get('slot_id')
+        slot = get_object_or_404(TimeSlot, id=slot_id)
 
-        # Overlap check
+        date = request.POST.get('date')
+
+        # conflict check
         conflict = Booking.objects.filter(
             field=field,
             date=date,
-            start_time__lt=end_time,
-            end_time__gt=start_time,
+            start_time=slot.start_time,
+            end_time=slot.end_time,
             status='approved'
         ).exists()
 
         if conflict:
-            messages.error(request, "⚠️ This field is already booked for that time slot.")
+            messages.error(request, "Slot already booked.")
             return redirect('book_field', field_id=field.id)
 
-        # Convert to datetime safely
-        try:
-            start_dt = datetime.strptime(f"{date} {start_time}", "%Y-%m-%d %H:%M")
-            end_dt = datetime.strptime(f"{date} {end_time}", "%Y-%m-%d %H:%M")
-        except ValueError:
-            messages.error(request, "Invalid date or time format.")
-            return redirect('book_field', field_id=field.id)
+        # compute amount
+        duration_hours = (datetime.combine(date=datetime.today(), time=slot.end_time) -
+                          datetime.combine(date=datetime.today(), time=slot.start_time)).seconds / 3600
 
-        if end_dt <= start_dt:
-            messages.error(request, "⚠️ End time must be after start time.")
-            return redirect('book_field', field_id=field.id)
-
-        # Price calculation
-        duration_hours = Decimal((end_dt - start_dt).seconds) / Decimal(3600)
-        amount = (duration_hours * Decimal(field.price_per_hour)).quantize(Decimal("0.01"))
+        amount = Decimal(duration_hours) * Decimal(field.price_per_hour)
 
         Booking.objects.create(
             user=request.user,
             field=field,
             date=date,
-            start_time=start_time,
-            end_time=end_time,
+            start_time=slot.start_time,
+            end_time=slot.end_time,
             status='pending',
             amount=amount,
             payment_status='unpaid'
         )
 
-        messages.success(request, f"Booking submitted! Amount: Rs. {amount}. Awaiting approval.")
+        messages.success(request, "Booking request submitted!")
         return redirect('my_bookings')
 
-    return render(request, 'book_field.html', {'field': field, 'initial': initial})
+    return render(request, 'book_field.html', {'field': field, 'slots': slots})
 
 
 @login_required
