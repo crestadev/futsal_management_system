@@ -1,10 +1,56 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - Futsal{% endblock %}
+{% block title %}Home - Futsal Management{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>Welcome to Futsal Management System</h1>
-    <p>Manage bookings, players, and schedules easily.</p>
+<div class="bg-light py-5">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold mb-3">Welcome to Futsal Management System</h1>
+    <p class="lead mb-4">Effortlessly manage bookings, players, fields and schedules — all in one place.</p>
+    <div class="d-flex justify-content-center gap-2">
+      <a href="{% url 'field_list' %}" class="btn btn-primary btn-lg">View Fields</a>
+      {% if user.is_authenticated %}
+      <a href="{% url 'my_bookings' %}" class="btn btn-outline-secondary btn-lg">My Bookings</a>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-lg">Login / Register</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row text-center">
+    <div class="col-md-4 mb-4">
+      <div class="p-4 border rounded shadow-sm h-100">
+        <div class="mb-3">
+          <i class="bi bi-calendar2-event display-4 text-primary"></i>
+        </div>
+        <h4 class="mb-2">Easy Bookings</h4>
+        <p>Select a field, pick a time slot and book in seconds — availability is shown live.</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="p-4 border rounded shadow-sm h-100">
+        <div class="mb-3">
+          <i class="bi bi-people-fill display-4 text-success"></i>
+        </div>
+        <h4 class="mb-2">Player Management</h4>
+        <p>Keep track of players, teams and their history — streamline your futsal club’s admin.</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="p-4 border rounded shadow-sm h-100">
+        <div class="mb-3">
+          <i class="bi bi-graph-up display-4 text-warning"></i>
+        </div>
+        <h4 class="mb-2">Analytics & Reports</h4>
+        <p>Get insights on bookings, revenue and field usage with our built-in dashboard.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <img src="{% static 'images/futsal_home_hero.jpg' %}" class="img-fluid rounded shadow" alt="Futsal field">
+  </div>
 </div>
 {% endblock %}
