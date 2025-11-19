@@ -19,7 +19,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from django.template.loader import render_to_string
-import pdfkit   # OPTIONAL: only if PDF receipts enabled
+import pdfkit 
 
 
 # ==========================================
