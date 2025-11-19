@@ -19,12 +19,12 @@ from datetime import datetime
 from decimal import Decimal
 
 from django.template.loader import render_to_string
-import pdfkit   # ONLY if you use PDF generation
+import pdfkit   # OPTIONAL: only if PDF receipts enabled
 
 
-# -----------------------------
+# ==========================================
 # PUBLIC PAGES
-# -----------------------------
+# ==========================================
 
 def home(request):
     return render(request, 'home.html')
@@ -51,14 +51,15 @@ def field_list(request):
     return render(request, 'field_list.html', {'fields': fields})
 
 
-# -----------------------------
-# BOOKING
-# -----------------------------
+# ==========================================
+# BOOKING SYSTEM
+# ==========================================
 
 @login_required
 def book_field(request, field_id):
     field = get_object_or_404(Field, id=field_id)
 
+    # Pre-filled values (if coming from calendar click)
     initial = {
         'date': request.GET.get('date', ''),
         'start': request.GET.get('start', ''),
@@ -70,7 +71,7 @@ def book_field(request, field_id):
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
 
-        # check conflict with approved bookings
+        # Conflict check (approved only)
         conflict = Booking.objects.filter(
             field=field,
             date=date,
@@ -83,9 +84,9 @@ def book_field(request, field_id):
             messages.error(request, "⚠️ This field is already booked for that time slot.")
             return redirect('book_field', field_id=field.id)
 
-        # compute price
-        start_dt = datetime.fromisoformat(f"{date} {start_time}")
-        end_dt = datetime.fromisoformat(f"{date} {end_time}")
+        # Calculate price
+        start_dt = datetime.strptime(f"{date} {start_time}", "%Y-%m-%d %H:%M")
+        end_dt = datetime.strptime(f"{date} {end_time}", "%Y-%m-%d %H:%M")
 
         if end_dt <= start_dt:
             messages.error(request, "⚠️ End time must be after start time.")
@@ -108,34 +109,46 @@ def book_field(request, field_id):
         messages.success(request, f"Booking submitted! Amount: Rs. {amount}. Awaiting approval.")
         return redirect('my_bookings')
 
-    return render(request, 'book_field.html', {'field': field, 'initial': initial})
+    return render(request, 'book_field.html', {
+        'field': field,
+        'initial': initial
+    })
 
 
 @login_required
 def my_bookings(request):
-    bookings = Booking.objects.filter(user=request.user).order_by('-date', '-start_time')
+    bookings = Booking.objects.filter(
+        user=request.user
+    ).order_by('-date', '-start_time')
     return render(request, 'my_bookings.html', {'bookings': bookings})
 
 
-# -----------------------------
+# ==========================================
 # RECEIPTS
-# -----------------------------
+# ==========================================
 
 @login_required
 def booking_receipt(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    booking = get_object_or_404(
+        Booking, id=booking_id, user=request.user
+    )
     return render(request, 'booking_receipt.html', {'booking': booking})
 
 
 @staff_member_required
 def admin_receipt(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
-    return render(request, 'booking_receipt.html', {'booking': booking, 'admin_view': True})
+    return render(request, 'booking_receipt.html', {
+        'booking': booking,
+        'admin_view': True
+    })
 
 
 @login_required
 def booking_receipt_pdf(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    booking = get_object_or_404(
+        Booking, id=booking_id, user=request.user
+    )
 
     html = render_to_string('booking_receipt.html', {'booking': booking})
     pdf = pdfkit.from_string(html, False)
@@ -145,9 +158,9 @@ def booking_receipt_pdf(request, booking_id):
     return response
 
 
-# -----------------------------
+# ==========================================
 # ADMIN DASHBOARD
-# -----------------------------
+# ==========================================
 
 @staff_member_required
 def admin_dashboard(request):
@@ -158,7 +171,7 @@ def admin_dashboard(request):
 @staff_member_required
 def update_booking_status(request, booking_id, status):
     booking = get_object_or_404(Booking, id=booking_id)
-    
+
     if request.method == 'POST':
         booking.status = status
         booking.save()
@@ -187,13 +200,16 @@ def update_payment_status(request, booking_id, action):
     return redirect('admin_dashboard')
 
 
-# -----------------------------
+# ==========================================
 # ANALYTICS
-# -----------------------------
+# ==========================================
 
 @staff_member_required
 def analytics_dashboard(request):
-    total_revenue = Booking.objects.filter(payment_status='paid').aggregate(Sum('amount'))['amount__sum'] or 0
+    total_revenue = Booking.objects.filter(
+        payment_status='paid'
+    ).aggregate(Sum('amount'))['amount__sum'] or 0
+
     total_bookings = Booking.objects.count()
     approved_bookings = Booking.objects.filter(status='approved').count()
 
@@ -217,9 +233,9 @@ def analytics_dashboard(request):
     })
 
 
-# -----------------------------
+# ==========================================
 # CALENDAR (SINGLE FIELD)
-# -----------------------------
+# ==========================================
 
 @login_required
 def availability_calendar(request, field_id):
@@ -232,6 +248,7 @@ def availability_api(request, field_id):
     field = get_object_or_404(Field, id=field_id)
 
     qs = Booking.objects.filter(field=field)
+
     if request.user.is_staff:
         qs = qs.filter(status__in=['approved', 'pending'])
     else:
@@ -248,9 +265,9 @@ def availability_api(request, field_id):
     return JsonResponse(events, safe=False)
 
 
-# -----------------------------
+# ==========================================
 # CALENDAR (ALL FIELDS)
-# -----------------------------
+# ==========================================
 
 @login_required
 def all_fields_calendar(request):
@@ -263,7 +280,8 @@ def all_fields_api(request):
     fields = Field.objects.all()
     events = []
 
-    colors = ["#1abc9c", "#3498db", "#9b59b6", "#f39c12", "#e74c3c", "#2ecc71", "#34495e"]
+    colors = ["#1abc9c", "#3498db", "#9b59b6", "#f39c12",
+              "#e74c3c", "#2ecc71", "#34495e"]
 
     for field in fields:
         qs = Booking.objects.filter(field=field)
@@ -278,7 +296,7 @@ def all_fields_api(request):
         for b in qs:
             events.append({
                 "id": b.id,
-                "title": f"{field.name}",
+                "title": field.name,
                 "start": f"{b.date}T{b.start_time}",
                 "end": f"{b.date}T{b.end_time}",
                 "color": field_color,
@@ -287,9 +305,9 @@ def all_fields_api(request):
     return JsonResponse(events, safe=False)
 
 
-# -----------------------------
+# ==========================================
 # PROFILE
-# -----------------------------
+# ==========================================
 
 @login_required
 def profile_view(request):
@@ -305,7 +323,10 @@ def profile_view(request):
     return render(request, 'profile.html', {'form': form})
 
 
+# ==========================================
+# FIELD DETAILS
+# ==========================================
+
 def field_detail(request, field_id):
     field = get_object_or_404(Field, id=field_id)
     return render(request, 'field_detail.html', {'field': field})
-
