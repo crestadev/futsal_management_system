@@ -51,3 +51,11 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.field.name} ({self.date})"
+
+class TimeSlot(models.Model):
+    field = models.ForeignKey(Field, on_delete=models.CASCADE, related_name='slots')
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return f"{self.field.name}: {self.start_time} - {self.end_time}"
