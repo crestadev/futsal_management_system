@@ -20,7 +20,9 @@ from datetime import datetime
 from decimal import Decimal
 
 from django.template.loader import render_to_string
-import pdfkit   # ONLY if using PDF generation
+import pdfkit  
+import openpyxl
+from openpyxl.utils import get_column_letter
 
 
 # ============================================================
@@ -294,3 +296,47 @@ def profile_view(request):
 def field_detail(request, field_id):
     field = get_object_or_404(Field, id=field_id)
     return render(request, 'field_detail.html', {'field': field})
+
+@staff_member_required
+def export_bookings_excel(request):
+    bookings = Booking.objects.all().order_by('-date', '-start_time')
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Bookings"
+
+    # Header row
+    headers = [
+        "User", "Field", "Date", "Start Time", "End Time", 
+        "Amount (Rs)", "Payment Status", "Booking Status", "Created At"
+    ]
+
+    ws.append(headers)
+
+    # Data rows
+    for b in bookings:
+        ws.append([
+            b.user.username,
+            b.field.name,
+            b.date.strftime("%Y-%m-%d"),
+            b.start_time.strftime("%H:%M"),
+            b.end_time.strftime("%H:%M"),
+            float(b.amount),
+            b.payment_status,
+            b.status,
+            b.created_at.strftime("%Y-%m-%d %H:%M"),
+        ])
+
+    # Auto-column width
+    for i, col in enumerate(ws.columns, 1):
+        max_length = max(len(str(cell.value)) for cell in col)
+        ws.column_dimensions[get_column_letter(i)].width = max_length + 2
+
+    # Response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="bookings.xlsx"'
+
+    wb.save(response)
+    return response
