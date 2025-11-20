@@ -3,8 +3,15 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2>Admin Booking Management</h2>
-  <table class="table table-hover mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Admin Booking Management</h2>
+
+    <a href="{% url 'export_excel' %}" class="btn btn-success">
+       Export Bookings (Excel)
+    </a>
+  </div>
+
+  <table class="table table-hover mt-2">
     <thead class="table-dark">
       <tr>
         <th>User</th>
@@ -19,12 +26,6 @@
       </tr>
     </thead>
     <tbody>
-      <div class="text-end mb-3">
-        <a href="{% url 'export_excel' %}" class="btn btn-success">
-          📤 Export Bookings (Excel)
-        </a>
-      </div>
-      
       {% for booking in bookings %}
       <tr>
         <td>{{ booking.user.username }}</td>
@@ -33,6 +34,7 @@
         <td>{{ booking.start_time }}</td>
         <td>{{ booking.end_time }}</td>
         <td>{{ booking.amount }}</td>
+
         <td>
           {% if booking.status == 'approved' %}
             <span class="badge bg-success">Approved</span>
@@ -42,6 +44,7 @@
             <span class="badge bg-danger">Rejected</span>
           {% endif %}
         </td>
+
         <td>
           {% if booking.payment_status == 'paid' %}
             <span class="badge bg-success">Paid</span>
@@ -51,36 +54,39 @@
             <span class="badge bg-danger">Unpaid</span>
           {% endif %}
         </td>
+
         <td>
           {% if booking.status == 'pending' %}
             <!-- Approve / Reject -->
             <form method="POST" action="{% url 'update_booking_status' booking.id 'approved' %}" style="display:inline;">
               {% csrf_token %}
-              <button class="btn btn-success btn-sm">Approve</button>
+              <button class="btn btn-success btn-sm mb-1">Approve</button>
             </form>
             <form method="POST" action="{% url 'update_booking_status' booking.id 'rejected' %}" style="display:inline;">
               {% csrf_token %}
-              <button class="btn btn-danger btn-sm">Reject</button>
+              <button class="btn btn-danger btn-sm mb-1">Reject</button>
             </form>
           {% else %}
             <!-- Payment controls -->
             <form method="POST" action="{% url 'update_payment_status' booking.id 'paid' %}" style="display:inline;">
               {% csrf_token %}
-              <button class="btn btn-outline-success btn-sm">Mark Paid</button>
+              <button class="btn btn-outline-success btn-sm mb-1">Mark Paid</button>
             </form>
             <form method="POST" action="{% url 'update_payment_status' booking.id 'unpaid' %}" style="display:inline;">
               {% csrf_token %}
-              <button class="btn btn-outline-danger btn-sm">Mark Unpaid</button>
+              <button class="btn btn-outline-danger btn-sm mb-1">Mark Unpaid</button>
             </form>
             <form method="POST" action="{% url 'update_payment_status' booking.id 'refunded' %}" style="display:inline;">
               {% csrf_token %}
-              <button class="btn btn-outline-secondary btn-sm">Refund</button>
+              <button class="btn btn-outline-secondary btn-sm mb-1">Refund</button>
             </form>
           {% endif %}
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="9" class="text-center">No bookings available.</td></tr>
+      <tr>
+        <td colspan="9" class="text-center">No bookings available.</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
