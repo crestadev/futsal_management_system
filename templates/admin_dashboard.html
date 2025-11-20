@@ -19,6 +19,12 @@
       </tr>
     </thead>
     <tbody>
+      <div class="text-end mb-3">
+        <a href="{% url 'export_excel' %}" class="btn btn-success">
+          📤 Export Bookings (Excel)
+        </a>
+      </div>
+      
       {% for booking in bookings %}
       <tr>
         <td>{{ booking.user.username }}</td>
