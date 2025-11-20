@@ -66,4 +66,7 @@ urlpatterns = [
         ),
         name='change_password'
     ),
+
+    path('export-excel/', views.export_bookings_excel, name='export_excel'),
+
 ]
