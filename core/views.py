@@ -186,6 +186,7 @@ def update_payment_status(request, booking_id, action):
 
         booking.save()
         messages.success(request, "Payment status updated.")
+        send_booking_email(booking, 'payment')
 
     return redirect('admin_dashboard')
 
