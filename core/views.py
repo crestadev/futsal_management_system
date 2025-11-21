@@ -156,12 +156,17 @@ def admin_dashboard(request):
 @staff_member_required
 def update_booking_status(request, booking_id, status):
     booking = get_object_or_404(Booking, id=booking_id)
-
+    
     if request.method == 'POST':
         booking.status = status
         booking.save()
         messages.success(request, f"Booking updated to {status.title()}.")
 
+        if status == 'approved':
+            send_booking_email(booking, 'approved')
+        elif status == 'rejected':
+            send_booking_email(booking, 'rejected')
+    
     return redirect('admin_dashboard')
 
 
