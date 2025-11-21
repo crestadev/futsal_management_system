@@ -23,6 +23,8 @@ from django.template.loader import render_to_string
 import pdfkit  
 import openpyxl
 from openpyxl.utils import get_column_letter
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 # ============================================================
@@ -340,3 +342,61 @@ def export_bookings_excel(request):
 
     wb.save(response)
     return response
+
+def send_booking_email(booking, event_type):
+    """
+    event_type: 'created', 'approved', 'rejected', 'payment'
+    """
+    user_email = booking.user.email
+    if not user_email:
+        return  # no email set, just skip
+
+    subject = ""
+    message = ""
+
+    if event_type == 'created':
+        subject = "Futsal Booking Request Received"
+        message = (
+            f"Hi {booking.user.username},\n\n"
+            f"We have received your booking request for {booking.field.name}.\n"
+            f"Date: {booking.date}\nTime: {booking.start_time} - {booking.end_time}\n"
+            f"Amount: Rs. {booking.amount}\n\n"
+            f"Status: Pending approval.\n\n"
+            "Thank you for using our Futsal Management System."
+        )
+    elif event_type == 'approved':
+        subject = "Futsal Booking Approved ✅"
+        message = (
+            f"Hi {booking.user.username},\n\n"
+            f"Your booking for {booking.field.name} has been APPROVED.\n"
+            f"Date: {booking.date}\nTime: {booking.start_time} - {booking.end_time}\n"
+            f"Amount: Rs. {booking.amount}\n\n"
+            "You can view your booking and receipt in your account.\n\n"
+            "Thank you!"
+        )
+    elif event_type == 'rejected':
+        subject = "Futsal Booking Rejected ❌"
+        message = (
+            f"Hi {booking.user.username},\n\n"
+            f"Unfortunately, your booking for {booking.field.name} on {booking.date} "
+            f"({booking.start_time} - {booking.end_time}) was REJECTED.\n\n"
+            "You may try another time slot.\n\n"
+            "Thank you."
+        )
+    elif event_type == 'payment':
+        subject = "Payment Status Updated"
+        message = (
+            f"Hi {booking.user.username},\n\n"
+            f"Payment status for your booking ({booking.field.name}, {booking.date} "
+            f"{booking.start_time}-{booking.end_time}) is now: {booking.payment_status.upper()}.\n\n"
+            "Thank you."
+        )
+
+    if subject and message:
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [user_email],
+            fail_silently=True,  # avoid crashing if email fails
+        )
