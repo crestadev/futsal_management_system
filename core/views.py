@@ -91,21 +91,22 @@ def book_field(request, field_id):
 
         amount = Decimal(duration_hours) * Decimal(field.price_per_hour)
 
-        Booking.objects.create(
-            user=request.user,
-            field=field,
-            date=date,
-            start_time=slot.start_time,
-            end_time=slot.end_time,
-            status='pending',
-            amount=amount,
-            payment_status='unpaid'
+        booking = Booking.objects.create(
+                user=request.user,
+                field=field,
+                date=date,
+                start_time=start_time,
+                end_time=end_time,
+                status='pending',
+                amount=amount,
+                payment_status='unpaid'
         )
 
-        messages.success(request, "Booking request submitted!")
+        send_booking_email(booking, 'created')
+        messages.success(request, f"Booking submitted! Amount: Rs. {amount}. Awaiting approval.")
         return redirect('my_bookings')
 
-    return render(request, 'book_field.html', {'field': field, 'slots': slots})
+        return render(request, 'book_field.html', {'field': field, 'slots': slots})
 
 
 @login_required
