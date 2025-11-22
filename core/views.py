@@ -446,3 +446,24 @@ def booking_receipt(request, booking_id):
         'booking': booking,
         'qr_base64': qr_base64,
     })
+
+@staff_member_required
+def admin_receipt(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    payment_text = (
+        f"Futsal Payment\n"
+        f"Field: {booking.field.name}\n"
+        f"Date: {booking.date}\n"
+        f"Time: {booking.start_time}-{booking.end_time}\n"
+        f"Amount: Rs. {booking.amount}\n"
+        f"Pay to: 98XXXXXXXX"
+    )
+
+    qr_base64 = generate_qr_base64(payment_text)
+
+    return render(request, 'booking_receipt.html', {
+        'booking': booking,
+        'admin_view': True,
+        'qr_base64': qr_base64,
+    })
