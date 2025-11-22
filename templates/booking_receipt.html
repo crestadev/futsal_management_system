@@ -38,6 +38,13 @@
     {% if booking.payment_ref %}
       <p><strong>Transaction Ref:</strong> {{ booking.payment_ref }}</p>
     {% endif %}
+    {% if qr_base64 %}
+    <hr>
+    <h5>Pay via QR Code</h5>
+    <p class="text-muted mb-1">Scan this code with your payment app to complete payment.</p>
+    <img src="data:image/png;base64,{{ qr_base64 }}" alt="Payment QR" class="img-fluid" style="max-width: 200px;">
+    {% endif %}
+
     <hr>
     <p class="text-center text-muted">© 2025 Futsal Management System</p>
   </div>
