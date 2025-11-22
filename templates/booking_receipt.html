@@ -7,6 +7,11 @@
       <h3>🏟 Futsal Booking Receipt</h3>
       <button class="btn btn-outline-primary" onclick="window.print()">🖨 Print</button>
     </div>
+
+    {% if admin_view %}
+      <p class="text-muted"><small>Admin view of receipt</small></p>
+    {% endif %}
+
     <hr>
     <p><strong>Customer:</strong> {{ booking.user.username }}</p>
     <p><strong>Field:</strong> {{ booking.field.name }}</p>
@@ -14,6 +19,7 @@
     <p><strong>Date:</strong> {{ booking.date }}</p>
     <p><strong>Time:</strong> {{ booking.start_time }} – {{ booking.end_time }}</p>
     <p><strong>Amount:</strong> Rs. {{ booking.amount }}</p>
+
     <p><strong>Status:</strong>
       {% if booking.status == 'approved' %}
         <span class="badge bg-success">Approved</span>
@@ -23,6 +29,7 @@
         <span class="badge bg-danger">Rejected</span>
       {% endif %}
     </p>
+
     <p><strong>Payment:</strong>
       {% if booking.payment_status == 'paid' %}
         <span class="badge bg-success">Paid</span>
@@ -35,18 +42,21 @@
         <span class="badge bg-danger">Unpaid</span>
       {% endif %}
     </p>
+
     {% if booking.payment_ref %}
       <p><strong>Transaction Ref:</strong> {{ booking.payment_ref }}</p>
     {% endif %}
-    {% if qr_base64 %}
-    <hr>
-    <h5>Pay via QR Code</h5>
-    <p class="text-muted mb-1">Scan this code with your payment app to complete payment.</p>
-    <img src="data:image/png;base64,{{ qr_base64 }}" alt="Payment QR" class="img-fluid" style="max-width: 200px;">
+
+    {% if qr_base64 and booking.payment_status != 'paid' %}
+      <hr>
+      <h5>Pay via QR Code</h5>
+      <p class="text-muted mb-1">Scan this code with your payment app to complete payment.</p>
+      <img src="data:image/png;base64,{{ qr_base64 }}" alt="Payment QR"
+           class="img-fluid border rounded p-2" style="max-width: 200px;">
     {% endif %}
 
     <hr>
-    <p class="text-center text-muted">© 2025 Futsal Management System</p>
+    <p class="text-center text-muted mb-0">© 2025 Futsal Management System</p>
   </div>
 </div>
 {% endblock %}
