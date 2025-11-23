@@ -467,3 +467,35 @@ def admin_receipt(request, booking_id):
         'admin_view': True,
         'qr_base64': qr_base64,
     })
+import requests
+import json
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@login_required
+def khalti_callback(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    
+    data = json.loads(request.body)
+    token = data.get("token")
+    amount = data.get("amount")
+
+    # Khalti verification endpoint
+    url = "https://khalti.com/api/v2/payment/verify/"
+    payload = {
+        "token": token,
+        "amount": amount
+    }
+    headers = {
+        "Authorization": "Key test_secret_key_1234567890"   # your secret key
+    }
+
+    response = requests.post(url, payload, headers=headers).json()
+
+    if response.get("idx"):
+        booking.payment_status = "paid"
+        booking.payment_date = timezone.now()
+        booking.save()
+        return JsonResponse({"success": True})
+    else:
+        return JsonResponse({"success": False, "error": response})
