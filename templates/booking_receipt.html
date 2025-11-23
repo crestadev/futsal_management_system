@@ -64,3 +64,52 @@
   </div>
 </div>
 {% endblock %}
+
+
+<script src="https://khalti.com/static/khalti-checkout.js"></script>
+<script>
+  var config = {
+    // replace with your TEST KEY
+    publicKey: "test_public_key_1234567890",
+    productIdentity: "{{ booking.id }}",
+    productName: "Futsal Booking Payment",
+    productUrl: window.location.href,
+    amount: {{ booking.amount|floatformat:2 }} * 100,  // paisa
+    
+    eventHandler: {
+      onSuccess(payload) {
+        // send token to backend for verification
+        fetch("{% url 'khalti_callback' booking.id %}", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify({
+              token: payload.token,
+              amount: payload.amount,
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("Payment Successful!");
+                window.location.reload();
+            } else {
+                alert("Payment verification failed.");
+            }
+        });
+      },
+
+      onError(err) {
+        console.log(err);
+        alert("Payment error.");
+      }
+    }
+  };
+
+  var checkout = new KhaltiCheckout(config);
+  document.getElementById("khalti-btn").onclick = function () {
+    checkout.show({amount: {{ booking.amount|floatformat:2 }} * 100});
+  }
+</script>
