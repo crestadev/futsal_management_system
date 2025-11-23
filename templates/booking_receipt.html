@@ -54,6 +54,10 @@
       <img src="data:image/png;base64,{{ qr_base64 }}" alt="Payment QR"
            class="img-fluid border rounded p-2" style="max-width: 200px;">
     {% endif %}
+    {% if booking.payment_status != 'paid' %}
+    <button id="khalti-btn" class="btn btn-purple mt-3">Pay with Khalti</button>
+    {% endif %}
+
 
     <hr>
     <p class="text-center text-muted mb-0">© 2025 Futsal Management System</p>
