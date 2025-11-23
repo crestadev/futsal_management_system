@@ -70,3 +70,5 @@ urlpatterns = [
     path('export-excel/', views.export_bookings_excel, name='export_excel'),
 
 ]
+path("khalti/callback/<int:booking_id>/", views.khalti_callback, name="khalti_callback")
+
