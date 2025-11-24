@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import Field, Booking, TimeSlot, FieldImage
+from .models import Field, Review, Booking, TimeSlot, FieldImage
 
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('field', 'user', 'rating', 'created_at')
+    list_filter = ('rating', 'field')
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
