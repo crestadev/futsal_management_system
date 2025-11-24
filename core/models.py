@@ -2,7 +2,19 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
+from django.core.validators import MinValueValidator, MaxValueValidator
 
+class Review(models.Model):
+    field = models.ForeignKey(Field, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    comment = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.field.name} - {self.user.username} ({self.rating})"
 class Field(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=150)
