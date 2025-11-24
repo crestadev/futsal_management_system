@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Field, Booking, TimeSlot
+from .models import Field, Booking, TimeSlot, FieldImage
 
 
 @admin.register(Booking)
@@ -26,3 +26,14 @@ class FieldAdmin(admin.ModelAdmin):
 class TimeSlotAdmin(admin.ModelAdmin):
     list_display = ('field', 'start_time', 'end_time')
     list_filter = ('field',)
+
+class FieldImageInline(admin.TabularInline):
+    model = FieldImage
+    extra = 1  
+
+@admin.register(Field)
+class FieldAdmin(admin.ModelAdmin):
+    list_display = ('name', 'location', 'price_per_hour', 'is_available')
+    inlines = [FieldImageInline]
+
+admin.site.register(FieldImage)
