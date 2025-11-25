@@ -499,3 +499,26 @@ def khalti_callback(request, booking_id):
         return JsonResponse({"success": True})
     else:
         return JsonResponse({"success": False, "error": response})
+
+@login_required
+def add_review(request, field_id):
+    field = get_object_or_404(Field, id=field_id)
+    existing = Review.objects.filter(field=field, user=request.user).first()
+
+    if existing:
+        messages.error(request, "You already reviewed this field.")
+        return redirect('field_detail', field_id=field.id)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            rev = form.save(commit=False)
+            rev.field = field
+            rev.user = request.user
+            rev.save()
+            messages.success(request, "Review submitted!")
+            return redirect('field_detail', field_id=field.id)
+    else:
+        form = ReviewForm()
+
+    return render(request, 'add_review.html', {'form': form, 'field': field})
