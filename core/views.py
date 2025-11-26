@@ -522,3 +522,24 @@ def add_review(request, field_id):
         form = ReviewForm()
 
     return render(request, 'add_review.html', {'form': form, 'field': field})
+@login_required
+def create_team(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+
+        if Team.objects.filter(name=name).exists():
+            messages.error(request, "Team name already taken.")
+            return redirect("create_team")
+
+        team = Team.objects.create(
+            name=name,
+            created_by=request.user
+        )
+
+        # automatically add creator as member
+        TeamMember.objects.create(team=team, user=request.user)
+
+        messages.success(request, "Team created successfully!")
+        return redirect("my_teams")
+
+    return render(request, "create_team.html")
