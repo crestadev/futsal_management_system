@@ -24,6 +24,8 @@ class TeamMember(models.Model):
     class Meta:
         unique_together = ('team', 'user')
         
+    def __str__(self):
+        return f"{self.user.username} in {self.team.name}"
 class Review(models.Model):
     field = models.ForeignKey(Field, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
