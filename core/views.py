@@ -543,3 +543,14 @@ def create_team(request):
         return redirect("my_teams")
 
     return render(request, "create_team.html")
+@login_required
+def join_team(request, team_id):
+    team = get_object_or_404(Team, id=team_id)
+
+    if TeamMember.objects.filter(team=team, user=request.user).exists():
+        messages.info(request, "You are already in this team.")
+    else:
+        TeamMember.objects.create(team=team, user=request.user)
+        messages.success(request, "You have joined the team!")
+
+    return redirect("my_teams")
