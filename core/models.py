@@ -66,6 +66,7 @@ class FieldImage(models.Model):
 class Booking(models.Model):
     STATUS_CHOICES = [('pending','Pending'), ('approved','Approved'), ('rejected','Rejected')]
     PAYMENT_CHOICES = [('unpaid','Unpaid'), ('paid','Paid'), ('refunded','Refunded')]
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, blank=True)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     field = models.ForeignKey(Field, on_delete=models.CASCADE)
