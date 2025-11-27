@@ -94,16 +94,20 @@ def book_field(request, field_id):
                           datetime.combine(date=datetime.today(), time=slot.start_time)).seconds / 3600
 
         amount = Decimal(duration_hours) * Decimal(field.price_per_hour)
+        team_id = request.POST.get("team_id")
+        team = Team.objects.filter(id=team_id).first() if team_id else None
 
         booking = Booking.objects.create(
-                user=request.user,
-                field=field,
-                date=date,
-                start_time=start_time,
-                end_time=end_time,
-                status='pending',
-                amount=amount,
-                payment_status='unpaid'
+            user=request.user,
+            field=field,
+            date=date,
+            start_time=start_time,
+            end_time=end_time,
+            status='pending',
+            amount=amount,
+            payment_status='unpaid',
+            team=team
+
         )
 
         send_booking_email(booking, 'created')
