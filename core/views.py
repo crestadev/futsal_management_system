@@ -554,3 +554,9 @@ def join_team(request, team_id):
         messages.success(request, "You have joined the team!")
 
     return redirect("my_teams")
+
+@login_required
+def my_teams(request):
+    teams = TeamMember.objects.filter(user=request.user)
+    return render(request, "my_teams.html", {"teams": teams})
+
