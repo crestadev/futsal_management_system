@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h3>My Teams</h3>
+
+  <a href="{% url 'create_team' %}" class="btn btn-success mb-3">+ Create Team</a>
+
+  {% if teams %}
+    {% for t in teams %}
+      <div class="card mb-3 p-3 shadow-sm">
+        <h5>{{ t.team.name }}</h5>
+        <small>Members: {{ t.team.members.count }}</small><br>
+        <a href="{% url 'join_team' t.team.id %}" class="btn btn-sm btn-outline-primary mt-2">Invite / Join</a>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No teams yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
