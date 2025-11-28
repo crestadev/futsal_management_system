@@ -72,4 +72,5 @@ urlpatterns = [
 ]
 path("khalti/callback/<int:booking_id>/", views.khalti_callback, name="khalti_callback")
 path('field/<int:field_id>/review/', views.add_review, name='add_review'),
+path("teams/", views.my_teams, name="my_teams"),
 
