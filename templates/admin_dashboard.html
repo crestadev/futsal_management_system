@@ -44,7 +44,10 @@
             <span class="badge bg-danger">Rejected</span>
           {% endif %}
         </td>
-
+        {% if b.team %}
+          <span class="badge bg-info">Team: {{ b.team.name }}</span>
+        {% endif %}
+      
         <td>
           {% if booking.payment_status == 'paid' %}
             <span class="badge bg-success">Paid</span>
