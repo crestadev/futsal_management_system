@@ -44,6 +44,10 @@
                         <span class="badge bg-danger">Unpaid</span>
                     {% endif %}
                 </td>
+                {% if booking.team %}
+                    <p><strong>Team:</strong> {{ booking.team.name }}</p>
+                {% endif %}
+
                 <td>
                     {% if booking.status == 'approved' %}
                       <a href="{% url 'booking_receipt' booking.id %}" class="btn btn-sm btn-outline-primary">View</a>
