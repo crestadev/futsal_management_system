@@ -105,3 +105,27 @@ class TimeSlot(models.Model):
 
     def __str__(self):
         return f"{self.field.name}: {self.start_time} - {self.end_time}"
+
+class Match(models.Model):
+    team_a = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='matches_as_team_a')
+    team_b = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='matches_as_team_b')
+
+    field = models.ForeignKey(Field, on_delete=models.CASCADE)
+
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    score_a = models.IntegerField(default=0)
+    score_b = models.IntegerField(default=0)
+
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('scheduled', 'Scheduled'),
+            ('completed', 'Completed'),
+            ('cancelled', 'Cancelled'),
+        ],
+        default='scheduled'
+    )
+
