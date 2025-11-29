@@ -582,3 +582,19 @@ def schedule_match(request):
         if team_a == team_b:
             messages.error(request, "A team cannot challenge itself.")
             return redirect("schedule_match")
+        
+                # create match
+        Match.objects.create(
+            team_a=team_a,
+            team_b=team_b,
+            field=field,
+            date=date,
+            start_time=start,
+            end_time=end,
+            status="scheduled"
+        )
+
+        messages.success(request, "Match scheduled successfully!")
+        return redirect("match_list")
+
+    return render(request, "schedule_match.html", {"teams": teams, "fields": fields})
