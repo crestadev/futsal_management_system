@@ -564,3 +564,21 @@ def my_teams(request):
     teams = TeamMember.objects.filter(user=request.user)
     return render(request, "my_teams.html", {"teams": teams})
 
+
+@login_required
+def schedule_match(request):
+    teams = Team.objects.all()
+    fields = Field.objects.all()
+
+    if request.method == "POST":
+        team_a = Team.objects.get(id=request.POST.get("team_a"))
+        team_b = Team.objects.get(id=request.POST.get("team_b"))
+        field = Field.objects.get(id=request.POST.get("field"))
+
+        date = request.POST.get("date")
+        start = request.POST.get("start_time")
+        end = request.POST.get("end_time")
+
+        if team_a == team_b:
+            messages.error(request, "A team cannot challenge itself.")
+            return redirect("schedule_match")
