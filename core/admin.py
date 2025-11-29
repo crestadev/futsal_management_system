@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Field, Review, Booking, TimeSlot, FieldImage
+from .models import Field, Review, Booking, TimeSlot, FieldImage, Match
 
 
 @admin.register(Review)
@@ -42,3 +42,9 @@ class FieldAdmin(admin.ModelAdmin):
     inlines = [FieldImageInline]
 
 admin.site.register(FieldImage)
+
+\
+@admin.register(Match)
+class MatchAdmin(admin.ModelAdmin):
+    list_display = ('team_a', 'team_b', 'field', 'date', 'status')
+    list_filter = ('status', 'field', 'date')
