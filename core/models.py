@@ -129,3 +129,14 @@ class Match(models.Model):
         default='scheduled'
     )
 
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.team_a.name} vs {self.team_b.name} ({self.date})"
+
+    def winner(self):
+        if self.score_a > self.score_b:
+            return self.team_a
+        elif self.score_b > self.score_a:
+            return self.team_b
+        return None
