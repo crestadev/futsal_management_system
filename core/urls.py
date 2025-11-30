@@ -77,4 +77,5 @@ path("teams/create/", views.create_team, name="create_team"),
 path("teams/join/<int:team_id>/", views.join_team, name="join_team"),
 path('matches/', views.match_list, name='match_list'),
 path('matches/schedule/', views.schedule_match, name='schedule_match'),
+path('matches/<int:match_id>/score/', views.report_score, name='report_score'),
 
