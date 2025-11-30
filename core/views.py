@@ -583,7 +583,6 @@ def schedule_match(request):
             messages.error(request, "A team cannot challenge itself.")
             return redirect("schedule_match")
         
-                # create match
         Match.objects.create(
             team_a=team_a,
             team_b=team_b,
@@ -598,3 +597,6 @@ def schedule_match(request):
         return redirect("match_list")
 
     return render(request, "schedule_match.html", {"teams": teams, "fields": fields})
+def match_list(request):
+    matches = Match.objects.order_by('-date', '-start_time')
+    return render(request, 'match_list.html', {'matches': matches})
