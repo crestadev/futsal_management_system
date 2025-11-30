@@ -600,3 +600,18 @@ def schedule_match(request):
 def match_list(request):
     matches = Match.objects.order_by('-date', '-start_time')
     return render(request, 'match_list.html', {'matches': matches})
+
+@login_required
+def report_score(request, match_id):
+    match = get_object_or_404(Match, id=match_id)
+
+    if request.method == "POST":
+        match.score_a = int(request.POST.get("score_a"))
+        match.score_b = int(request.POST.get("score_b"))
+        match.status = "completed"
+        match.save()
+
+        messages.success(request, "Match result submitted!")
+        return redirect("match_list")
+
+    return render(request, "report_score.html", {"match": match})
