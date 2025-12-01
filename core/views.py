@@ -615,3 +615,8 @@ def report_score(request, match_id):
         return redirect("match_list")
 
     return render(request, "report_score.html", {"match": match})
+
+def leaderboard(request):
+    teams = Team.objects.all()
+    teams = sorted(teams, key=lambda t: t.points(), reverse=True)
+    return render(request, "leaderboard.html", {"teams": teams})
