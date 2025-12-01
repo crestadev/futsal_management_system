@@ -13,6 +13,21 @@ class Team(models.Model):
     def __str__(self):
         return self.name
     
+    def points(self):
+    matches = Match.objects.filter(status="completed").filter(
+        models.Q(team_a=self) | models.Q(team_b=self)
+    )
+
+    pts = 0
+    for m in matches:
+        if m.winner() == self:
+            pts += 3
+        elif m.score_a == m.score_b:
+            pts += 1
+
+    return pts
+
+    
 
 
 class TeamMember(models.Model):
