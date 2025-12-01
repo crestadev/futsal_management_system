@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+
+  <h3>Matches</h3>
+  <a href="{% url 'schedule_match' %}" class="btn btn-success mb-3">+ Schedule Match</a>
+
+  {% for m in matches %}
+    <div class="card mb-3 p-3 shadow-sm">
+      <h5>{{ m.team_a.name }} vs {{ m.team_b.name }}</h5>
+      <p>{{ m.field.name }} — {{ m.date }} ({{ m.start_time }} - {{ m.end_time }})</p>
+      <p>Status: <strong>{{ m.status }}</strong></p>
+
+      {% if m.status == 'completed' %}
+        <p>Score: {{ m.score_a }} - {{ m.score_b }}</p>
+      {% else %}
+        <a href="{% url 'report_score' m.id %}" class="btn btn-outline-primary btn-sm">Report Score</a>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+</div>
+{% endblock %}
