@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h3>🏆 Team Leaderboard</h3>
+
+  <table class="table table-striped mt-3">
+    <tr>
+      <th>Rank</th>
+      <th>Team</th>
+      <th>Points</th>
+    </tr>
+
+    {% for t in teams %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ t.name }}</td>
+      <td>{{ t.points }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+</div>
+{% endblock %}
