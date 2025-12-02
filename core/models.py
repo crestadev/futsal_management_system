@@ -93,13 +93,17 @@ class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-
-    amount = models.DecimalField(max_digits=9, decimal_places=2, default=0)  # auto-filled on create
+    amount = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     payment_status = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='unpaid')
     payment_date = models.DateTimeField(null=True, blank=True)
-    payment_ref = models.CharField(max_length=64, blank=True)  # optional txn/reference
+    payment_ref = models.CharField(max_length=64, blank=True)
+
+    team = models.ForeignKey('Team', null=True, blank=True, on_delete=models.SET_NULL, related_name='bookings')  # 🆕
+
 
     def clean(self):
+
+        
         # time sanity
         if self.end_time <= self.start_time:
             raise ValidationError("End time must be after start time.")
