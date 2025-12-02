@@ -6,8 +6,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_teams')
+    members = models.ManyToManyField(User, related_name='teams', blank=True)
+    is_public = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
