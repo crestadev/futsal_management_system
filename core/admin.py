@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Field, Review, Booking, TimeSlot, FieldImage, Match
+from .models import Field, Review, Booking, TimeSlot, FieldImage, Match, Team
 
 
 @admin.register(Review)
@@ -48,3 +48,8 @@ admin.site.register(FieldImage)
 class MatchAdmin(admin.ModelAdmin):
     list_display = ('team_a', 'team_b', 'field', 'date', 'status')
     list_filter = ('status', 'field', 'date')
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
+    list_display = ('name', 'owner', 'is_public', 'created_at')
+    filter_horizontal = ('members',)
