@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Review
+from .models import Review, Team
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -18,4 +18,11 @@ class ReviewForm(forms.ModelForm):
         widgets = {
             'rating': forms.NumberInput(attrs={'min':1, 'max':5, 'class':'form-control'}),
             'comment': forms.Textarea(attrs={'class':'form-control', 'rows':3}),
+        }
+class TeamForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ['name', 'is_public']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
         }
