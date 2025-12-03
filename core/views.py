@@ -629,3 +629,18 @@ def team_list(request):
         'my_teams': my_teams,
         'other_public_teams': other_public_teams
     })
+
+@login_required
+def create_team(request):
+    if request.method == 'POST':
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            team = form.save(commit=False)
+            team.owner = request.user
+            team.save()
+            team.members.add(request.user)
+            messages.success(request, "Team created and you were added as a member.")
+            return redirect('team_list')
+    else:
+        form = TeamForm()
+    return render(request, 'create_team.html', {'form': form})
