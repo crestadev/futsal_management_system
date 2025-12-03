@@ -644,3 +644,10 @@ def create_team(request):
     else:
         form = TeamForm()
     return render(request, 'create_team.html', {'form': form})
+
+@login_required
+def join_team(request, team_id):
+    team = get_object_or_404(Team, id=team_id, is_public=True)
+    team.members.add(request.user)
+    messages.success(request, f"You joined team {team.name}.")
+    return redirect('team_list')
