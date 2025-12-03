@@ -651,3 +651,10 @@ def join_team(request, team_id):
     team.members.add(request.user)
     messages.success(request, f"You joined team {team.name}.")
     return redirect('team_list')
+
+def leave_team(request, team_id):
+    team = get_object_or_404(Team, id=team_id)
+    if request.user in team.members.all():
+        team.members.remove(request.user)
+        messages.success(request, f"You left team {team.name}.")
+    return redirect('team_list')
