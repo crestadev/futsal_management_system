@@ -620,3 +620,12 @@ def leaderboard(request):
     teams = Team.objects.all()
     teams = sorted(teams, key=lambda t: t.points(), reverse=True)
     return render(request, "leaderboard.html", {"teams": teams})
+
+@login_required
+def team_list(request):
+    my_teams = request.user.teams.all()
+    other_public_teams = Team.objects.filter(is_public=True).exclude(members=request.user)
+    return render(request, 'team_list.html', {
+        'my_teams': my_teams,
+        'other_public_teams': other_public_teams
+    })
