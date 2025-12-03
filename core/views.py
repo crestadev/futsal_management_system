@@ -68,34 +68,48 @@ def field_list(request):
 @login_required
 def book_field(request, field_id):
     field = get_object_or_404(Field, id=field_id)
-    slots = TimeSlot.objects.filter(field=field).order_by('start_time')
+
+    initial = {
+        'date': request.GET.get('date', ''),
+        'start': request.GET.get('start', ''),
+        'end': request.GET.get('end', ''),
+    }
+
+    user_teams = request.user.teams.all()  # 🆕 teams user belongs to
 
     if request.method == 'POST':
-        slot_id = request.POST.get('slot_id')
-        slot = get_object_or_404(TimeSlot, id=slot_id)
-
         date = request.POST.get('date')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+        team_id = request.POST.get('team_id')  # 🆕 from dropdown (optional)
 
-        # conflict check
+        team = None
+        if team_id:
+            team = get_object_or_404(Team, id=team_id, members=request.user)
+
+        # conflict check...
         conflict = Booking.objects.filter(
             field=field,
             date=date,
-            start_time=slot.start_time,
-            end_time=slot.end_time,
+            start_time__lt=end_time,
+            end_time__gt=start_time,
             status='approved'
         ).exists()
 
         if conflict:
-            messages.error(request, "Slot already booked.")
+            messages.error(request, "⚠️ This field is already booked for that time slot.")
             return redirect('book_field', field_id=field.id)
 
-        # compute amount
-        duration_hours = (datetime.combine(date=datetime.today(), time=slot.end_time) -
-                          datetime.combine(date=datetime.today(), time=slot.start_time)).seconds / 3600
+        # compute price...
+        start_dt = datetime.fromisoformat(f"{date} {start_time}")
+        end_dt = datetime.fromisoformat(f"{date} {end_time}")
 
-        amount = Decimal(duration_hours) * Decimal(field.price_per_hour)
-        team_id = request.POST.get("team_id")
-        team = Team.objects.filter(id=team_id).first() if team_id else None
+        if end_dt <= start_dt:
+            messages.error(request, "⚠️ End time must be after start time.")
+            return redirect('book_field', field_id=field.id)
+
+        duration_hours = Decimal((end_dt - start_dt).seconds) / Decimal(3600)
+        amount = (duration_hours * Decimal(field.price_per_hour)).quantize(Decimal("0.01"))
 
         booking = Booking.objects.create(
             user=request.user,
@@ -106,16 +120,20 @@ def book_field(request, field_id):
             status='pending',
             amount=amount,
             payment_status='unpaid',
-            team=team
-
+            team=team  # 🆕 save team
         )
 
-        send_booking_email(booking, 'created')
+        # if you’re using email helper:
+        # send_booking_email(booking, 'created')
+
         messages.success(request, f"Booking submitted! Amount: Rs. {amount}. Awaiting approval.")
         return redirect('my_bookings')
 
-        return render(request, 'book_field.html', {'field': field, 'slots': slots})
-
+    return render(request, 'book_field.html', {
+        'field': field,
+        'initial': initial,
+        'user_teams': user_teams,  # 🆕 send teams to template
+    })
 
 @login_required
 def my_bookings(request):
