@@ -13,8 +13,8 @@ from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from .models import TimeSlot
 
-from .models import Field, Booking
-from .forms import ProfileForm
+from .models import Field, Booking,Team
+from .forms import ProfileForm, TeamForm
 
 from datetime import datetime
 from decimal import Decimal
