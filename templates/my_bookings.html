@@ -45,8 +45,13 @@
                     {% endif %}
                 </td>
                 {% if booking.team %}
-                    <p><strong>Team:</strong> {{ booking.team.name }}</p>
+                    <p><strong>Team:</strong>
+                        <td>
+                            {% if booking.team %}
+                             {{ booking.team.name }}
+                            {% else %}</p>
                 {% endif %}
+                        </td>
 
                 <td>
                     {% if booking.status == 'approved' %}
