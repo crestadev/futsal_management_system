@@ -16,6 +16,19 @@
       <div class="col-6 col-md-4 mb-3">
         <label class="w-100">
           <input type="radio" name="slot_id" value="{{ slot.id }}" required>
+
+          {% if user_teams %}
+          <div class="mb-3">
+            <label for="team_id" class="form-label">Book for Team (optional)</label>
+            <select name="team_id" id="team_id" class="form-select">
+              <option value="">Just Myself</option>
+              {% for team in user_teams %}
+                <option value="{{ team.id }}">{{ team.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+
           <div class="btn btn-outline-primary w-100">
             {{ slot.start_time }} - {{ slot.end_time }}
           </div>
