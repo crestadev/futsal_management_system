@@ -30,6 +30,11 @@
           <li class="nav-item">
             <a class="nav-link {% if url_name == 'field_list' %}active{% endif %}" href="{% url 'field_list' %}">Fields</a>
           </li>
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link {% if url_name == 'team_list' %}active{% endif %}" href="{% url 'team_list' %}">Teams</a>
+            </li>
+            {% endif %}
 
           {% if user.is_authenticated %}
               <!-- Authenticated user options -->
