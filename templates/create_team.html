@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
+{% block title %}Create Team{% endblock %}
+
 {% block content %}
-<div class="container mt-5 col-md-6">
+<div class="container mt-4 col-md-6">
   <h3>Create a Team</h3>
   <form method="POST">
     {% csrf_token %}
-    <input type="text" name="name" class="form-control mb-3" required placeholder="Team Name">
-    <button class="btn btn-primary w-100">Create Team</button>
+    {{ form.as_p }}
+    <button class="btn btn-success w-100 mt-2">Create</button>
   </form>
 </div>
 {% endblock %}
