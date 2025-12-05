@@ -19,7 +19,9 @@ class TeamBooking(models.Model):
    @property
     def current_players(self):
         return self.members.count()
-
+    @property
+    def is_full(self):
+        return self.current_players >= self.max_players
 
 class Team(models.Model):
     name = models.CharField(max_length=100)
