@@ -52,3 +52,7 @@ class MatchAdmin(admin.ModelAdmin):
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('name', 'owner', 'is_public', 'created_at')
     filter_horizontal = ('members',)
+
+@admin.register(TeamBooking)
+class TeamBookingAdmin(admin.ModelAdmin):
+    list_display = ('booking', 'max_players', 'is_public')
