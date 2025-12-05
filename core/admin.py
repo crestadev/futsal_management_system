@@ -43,7 +43,6 @@ class FieldAdmin(admin.ModelAdmin):
 
 admin.site.register(FieldImage)
 
-\
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
     list_display = ('team_a', 'team_b', 'field', 'date', 'status')

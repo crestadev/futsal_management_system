@@ -5,6 +5,19 @@ from datetime import datetime, timedelta
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
+class TeamBooking(models.Model):
+    booking = models.OneToOneField(
+        Booking,
+        on_delete=models.CASCADE,
+        related_name='team'
+    )
+    max_players = models.PositiveIntegerField(default=10, validators=[MinValueValidator(2)])
+    is_public = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Team for {self.booking.field.name} on {self.booking.date}"
+
+
 class Team(models.Model):
     name = models.CharField(max_length=100)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_teams')
