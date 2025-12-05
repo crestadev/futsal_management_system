@@ -56,3 +56,7 @@ class TeamAdmin(admin.ModelAdmin):
 @admin.register(TeamBooking)
 class TeamBookingAdmin(admin.ModelAdmin):
     list_display = ('booking', 'max_players', 'is_public')
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = ('team', 'user', 'is_captain', 'joined_at')
