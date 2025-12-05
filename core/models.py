@@ -51,13 +51,21 @@ class Team(models.Model):
 
 
 class TeamMember(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members')
+    team = models.ForeignKey(
+        TeamBooking,
+        on_delete=models.CASCADE,
+        related_name='members'
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
+    is_captain = models.BooleanField(default=False)
     joined_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('team', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} in {self.team}"
+
         
     def __str__(self):
         return f"{self.user.username} in {self.team.name}"
