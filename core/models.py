@@ -16,6 +16,9 @@ class TeamBooking(models.Model):
 
     def __str__(self):
         return f"Team for {self.booking.field.name} on {self.booking.date}"
+   @property
+    def current_players(self):
+        return self.members.count()
 
 
 class Team(models.Model):
